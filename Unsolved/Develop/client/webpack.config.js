@@ -18,13 +18,69 @@ module.exports = () => {
       path: path.resolve(__dirname, 'dist'),
     },
     plugins: [
-      
-    ],
+			new HtmlWebpackPlugin({
+				template: "./index.html",
+				title: "Jate",
+			}),
+			new InjectManifest({
+				swSrc: "./src-sw.js",
+				swDest: "src-sw.js",
+			}),
+			new GenerateSW({
+				exclude: [/\.(?:png|jpg|jpeg|svg)$/],
+
+				runtimeCaching: [
+					{
+						urlPattern: /.(?:png|jpg|jpeg|svg)$/,
+						handler: "CacheFirst",
+
+						options: {
+							cacheName: "images",
+							expiration: { maxEntries: 10 },
+						},
+					},
+				],
+			}),
+			new WebpackPwaManifest({
+				name: "Text Editor",
+				short_name: "JATE",
+				background_color: "#FFFFFF",
+				display: "standalone",
+				orientation: "portrait",
+				fingerprints: false,
+				publicPath: "./",
+				icons: {
+					src: path.resolve("src/images/logo.png"),
+					sizes: [96, 120, 152, 167, 180, 1024],
+					destination: path.join("assets", "icons"),
+				},
+			}),
+		],
+   
 
     module: {
       rules: [
-        
-      ],
-    },
-  };
+				{
+					test: /\.css$/i,
+					use: ["style-loader", "css-loader"],
+				},
+				{
+					test: /\.m?js$/,
+					exclude: /node_modules/,
+					use: {
+						loader: "babel-loader",
+						options: {
+							presets: ["@babel/preset-env"],
+							plugins: [
+								"@babel/plugin-proposal-object-rest-spread",
+								"@babel/transform-runtime",
+							],
+						},
+					},
+				},
+			],
+		},
+	};
 };
+        
+ 
