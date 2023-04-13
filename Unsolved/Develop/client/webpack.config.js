@@ -22,6 +22,10 @@ module.exports = () => {
 				template: "./index.html",
 				title: "J.A.T.E.",
 			}),
+			new MiniCSSExtractPlugin({
+				filename: "[name].css",
+				chunkFilename: "[id].css",
+			}),
 			new InjectManifest({
 				swSrc: "./src-sw.js",
 				swDest: "src-sw.js",
@@ -56,31 +60,31 @@ module.exports = () => {
 				},
 			}),
 		],
-   
-
-    module: {
-      rules: [
-				{
-					test: /\.css$/i,
-					use: ["style-loader", "css-loader"],
-				},
-				{
-					test: /\.m?js$/,
-					exclude: /node_modules/,
-					use: {
-						loader: "babel-loader",
-						options: {
-							presets: ["@babel/preset-env"],
-							plugins: [
-								"@babel/plugin-proposal-object-rest-spread",
-								"@babel/transform-runtime",
-							],
-						},
-					},
-				},
+		module: {
+			rules: [
+			  {
+				// compiling our css with MiniCSSExtract
+				test: /\.css$/i,
+				use: [MiniCssExtractPlugin.loader, 'css-loader'],
+			  },
+			  {
+				// marking images as static assets
+				test: /\.(png|svg|jpg|jpeg|gif)$/i,
+				type: 'asset/resource',
+			  },
+			  {
+				// compiling our js with babel
+				test: /\.m?js$/,
+				exclude: /(node_modules|bower_components)/,
+				use: {
+				  loader: 'babel-loader',
+				  options: {
+					presets: ['@babel/preset-env']
+				  }
+				}
+			  },
 			],
-		},
-	};
-};
+		  },
+	  };
         
  
